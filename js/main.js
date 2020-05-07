@@ -21,6 +21,16 @@ const menu = document.querySelector('.menu');
 const logo = document.querySelector('.logo');
 const cardsMenu = document.querySelector('.cards-menu');
 
+let login = localStorage.getItem('gloDelivery');
+
+const valid = function(str) {
+  const namereg = /^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ]+[a-zA-Zа-яА-Я']?$/u;
+  if(!namereg.test(str)){
+    if(str.length < 20) alert('Имя слишком длинное');
+  } else {
+    return true;
+  }
+}
 
 function toggleModal() {
   modal.classList.toggle("is-open");
@@ -29,9 +39,6 @@ function toggleModal() {
 function toggleModalAuth() {
   modalAuth.classList.toggle("is-open");
 }
-
-
-let login = localStorage.getItem('gloDelivery');
 
 function authorized(){
   function logOut(){
@@ -64,7 +71,7 @@ function notAuthorized(){
     e.preventDefault();
     if(loginInput.value == '') {
       alert('Пожалуйста, заполните поле Логин');
-    } else {
+    } else if(valid(loginInput.value)) {
       login = loginInput.value;
       localStorage.setItem('gloDelivery', login);
 
@@ -83,6 +90,8 @@ function notAuthorized(){
       logInFormn.removeEventListener('submit', logIn);
 
       checkAuth();
+    } else {
+      loginInput.value = '';
     }
   }
 
@@ -105,7 +114,7 @@ function checkAuth(){
   }
 }
 
-checkAuth();
+
 
 //day 2
 function createCardRestaurant(){
@@ -164,21 +173,25 @@ function openGoods(event){
   const restaurant = target.closest('.card-restaurant'); // ищем родительский селектор
 
   if(restaurant) {
-    console.log('restaurant check');
-    containerPromo.classList.add('hide');
-    restaurants.classList.add('hide');
-    menu.classList.remove('hide');
-
-    cardsMenu.textContent = ''; // очищаем меню
-
-    createCardOfGood();
-    createCardOfGood();
-    createCardOfGood();
+    
+    if(login) {
+      containerPromo.classList.add('hide');
+      restaurants.classList.add('hide');
+      menu.classList.remove('hide');
+  
+      cardsMenu.textContent = ''; // очищаем меню
+  
+      createCardOfGood();
+      createCardOfGood();
+      createCardOfGood();
+    } else {
+      toggleModalAuth();
+    }
+    
   }
 }
 
-
-createCardOfGood();
+checkAuth();
 
 cardsRestaurants.addEventListener('click', openGoods);
 
@@ -191,3 +204,8 @@ logo.addEventListener('click', function(e){
 
 cartButton.addEventListener("click", toggleModal);
 close.addEventListener("click", toggleModal);
+
+new Swiper('.swiper-container', {
+  loop: true,
+  autoplay: true
+})
